@@ -59,6 +59,12 @@
         text-align: start;
         width: 700px;
       }
+      .emphasize-subcategory {
+        text-decoration: underline wavy;
+        font-weight: bold;
+        transform: skewX(-15deg);
+        display: inline-block
+      }
     </style>
   </head>
   <body></body>
@@ -567,12 +573,17 @@
       choices: [' ']
     };
 
+    /*
+      フォントに依存しない斜体はtransformXで実現し，そのためにinline-block要素にしたが，
+      inline-blockは要素途中の改行がなされないため，しかたがなしに細かく区切った
+      （シナリオは画像による呈示の方が適しているのかもしれない）
+    */
     const vignette_pathological = {
         type: jsPsychHtmlKeyboardResponse,
         stimulus: `
         <div id='vignette'>
         太郎はあなたの大学の学生です。先月太郎はいつもより多くのお金を賭けるようになりました。
-        同じような興奮を得るためには，以前よりももっとギャンブルをしなければならないことにも彼は気づいていました。彼は何度かギャンブルを減らそうとしたり止めたりしようとしましたが，その度に興奮して眠れなくなり，再びギャンブルを始めました。彼の家族は，彼がひどく変わってしまったことや，彼が誰なのかさえ分からなくなったような気がすると訴えています。また，経済的な援助をしなければならないことに憤りを感じ始めています。<span style='text-decoration: underline wavy; font-weight: bold; font-style: italic'>ギャンブラーというカテゴリーの中には，太郎のようなギャンブル依存者が非常に多く存在します。</span>
+        同じような興奮を得るためには，以前よりももっとギャンブルをしなければならないことにも彼は気づいていました。彼は何度かギャンブルを減らそうとしたり止めたりしようとしましたが，その度に興奮して眠れなくなり，再びギャンブルを始めました。彼の家族は，彼がひどく変わってしまったことや，彼が誰なのかさえ分からなくなったような気がすると訴えています。また，経済的な援助をしなければならないことに憤りを感じ始めています。<span class='emphasize-subcategory'>ギャ</span><span class='emphasize-subcategory'>ン</span><span class='emphasize-subcategory'>ブ</span><span class='emphasize-subcategory'>ラ</span><span class='emphasize-subcategory'>ー</span><span class='emphasize-subcategory'>と</span><span class='emphasize-subcategory'>い</span><span class='emphasize-subcategory'>う</span><span class='emphasize-subcategory'>カ</span><span class='emphasize-subcategory'>テ</span><span class='emphasize-subcategory'>ゴ</span><span class='emphasize-subcategory'>リ</span><span class='emphasize-subcategory'>ー</span><span class='emphasize-subcategory'>の</span><span class='emphasize-subcategory'>中</span><span class='emphasize-subcategory'>に</span><span class='emphasize-subcategory'>は，</span><span class='emphasize-subcategory'>太</span><span class='emphasize-subcategory'>郎</span><span class='emphasize-subcategory'>の</span><span class='emphasize-subcategory'>よ</span><span class='emphasize-subcategory'>う</span><span class='emphasize-subcategory'>な</span><span class='emphasize-subcategory'>ギャ</span><span class='emphasize-subcategory'>ン</span><span class='emphasize-subcategory'>ブ</span><span class='emphasize-subcategory'>ル</span><span class='emphasize-subcategory'>依</span><span class='emphasize-subcategory'>存</span><span class='emphasize-subcategory'>者</span><span class='emphasize-subcategory'>が</span><span class='emphasize-subcategory'>非</span><span class='emphasize-subcategory'>常</span><span class='emphasize-subcategory'>に</span><span class='emphasize-subcategory'>多</span><span class='emphasize-subcategory'>く</span><span class='emphasize-subcategory'>存</span><span class='emphasize-subcategory'>在</span><span class='emphasize-subcategory'>し</span><span class='emphasize-subcategory'>ま</span><span class='emphasize-subcategory'>す。</span>
         </div>`,
         choices: ['enter'],
         prompt: '<br>内容をよく読んで理解したらEnterキーで次に進みます。'
@@ -582,7 +593,7 @@
         type: jsPsychHtmlKeyboardResponse,
         stimulus: `
         <div id='vignette'>
-        <p>太郎はあなたの大学の学生です。先月太郎はいつも通りの金額で賭けを行いました。趣味として，以前と変わらずギャンブルを楽しめています。彼は学業やサークルが忙しい時はギャンブルを減らしたり止めたりすることができており，時間に余裕があるときに節度を持ってギャンブルをするようにしています。彼の家族は彼が自分を律しながらギャンブルを楽しんでいる様子を見守っています。また，経済的な援助をする必要がない状態で，一切憤りを感じることもありません。<span style='text-decoration: underline wavy; font-weight: bold; font-style: italic'>ギャンブラーというカテゴリーの中には，太郎のようなギャンブルを趣味として程よく楽しめる人が非常に多く存在します。</span>
+        <p>太郎はあなたの大学の学生です。先月太郎はいつも通りの金額で賭けを行いました。趣味として，以前と変わらずギャンブルを楽しめています。彼は学業やサークルが忙しい時はギャンブルを減らしたり止めたりすることができており，時間に余裕があるときに節度を持ってギャンブルをするようにしています。彼の家族は彼が自分を律しながらギャンブルを楽しんでいる様子を見守っています。また，経済的な援助をする必要がない状態で，一切憤りを感じることもありません。<span class='emphasize-subcategory'>ギャ</span><span class='emphasize-subcategory'>ン</span><span class='emphasize-subcategory'>ブ</span><span class='emphasize-subcategory'>ラー</span><span class='emphasize-subcategory'>と</span><span class='emphasize-subcategory'>い</span><span class='emphasize-subcategory'>う</span><span class='emphasize-subcategory'>カ</span><span class='emphasize-subcategory'>テ</span><span class='emphasize-subcategory'>ゴ</span><span class='emphasize-subcategory'>リー</span><span class='emphasize-subcategory'>の</span><span class='emphasize-subcategory'>中</span><span class='emphasize-subcategory'>に</span><span class='emphasize-subcategory'>は，</span><span class='emphasize-subcategory'>太</span><span class='emphasize-subcategory'>郎</span><span class='emphasize-subcategory'>の</span><span class='emphasize-subcategory'>よ</span><span class='emphasize-subcategory'>う</span><span class='emphasize-subcategory'>な</span><span class='emphasize-subcategory'>ギャ</span><span class='emphasize-subcategory'>ン</span><span class='emphasize-subcategory'>ブ</span><span class='emphasize-subcategory'>ル</span><span class='emphasize-subcategory'>を</span><span class='emphasize-subcategory'>趣</span><span class='emphasize-subcategory'>味</span><span class='emphasize-subcategory'>と</span><span class='emphasize-subcategory'>し</span><span class='emphasize-subcategory'>て</span><span class='emphasize-subcategory'>程</span><span class='emphasize-subcategory'>よ</span><span class='emphasize-subcategory'>く</span><span class='emphasize-subcategory'>楽</span><span class='emphasize-subcategory'>し</span><span class='emphasize-subcategory'>め</span><span class='emphasize-subcategory'>る</span><span class='emphasize-subcategory'>人</span><span class='emphasize-subcategory'>が</span><span class='emphasize-subcategory'>非</span><span class='emphasize-subcategory'>常</span><span class='emphasize-subcategory'>に</span><span class='emphasize-subcategory'>多</span><span class='emphasize-subcategory'>く</span><span class='emphasize-subcategory'>存</span><span class='emphasize-subcategory'>在</span><span class='emphasize-subcategory'>し</span><span class='emphasize-subcategory'>ま</span><span class='emphasize-subcategory'>す。</span>
         </div>`,
         choices: ['enter'],
         prompt: '<br>内容をよく読んで理解したらEnterキーで次に進みます。'
