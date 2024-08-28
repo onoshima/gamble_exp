@@ -127,6 +127,7 @@
           return `
           <p>この実験にはGoogle Chrome，Firefox, Microsoft Edgeのいずれかのブラウザからしかご参加いただけません。</p>
           <p>ブラウザを変えてアクセスしてください。</p>
+          <p>フルスクリーンモードはEscキーで解除できます。</p>
           `;
         }
       },
@@ -628,14 +629,14 @@
             type: 'likert-table',
             prompt: 'あなたが以下の状況になったら，どれくらいそれをしたいと思うと思いますか。',
             statements: [
-              {prompt: '太郎の家の隣に引っ越す', name: 'ASD_1'},
-              {prompt: '太郎と友達になる', name: 'ASD_2'},
-              {prompt: '太郎と夕方から夜にかけて一緒に過ごす', name: 'ASD_3'},
-              {prompt: '太郎と仕事場で一緒に働く', name: 'ASD_4'},
-              {prompt: '太郎のような人々のための集合支援住宅が近所にできる', name: 'ASD_5'},
-              {prompt: '太郎が家族の一員となる', name: 'ASD_6'}
+              {prompt: '太郎の家の隣に引っ越す。', name: 'SD_1'},
+              {prompt: '太郎と友達になる。', name: 'SD_2'},
+              {prompt: '太郎と夕方から夜にかけて一緒に過ごす。', name: 'SD_3'},
+              {prompt: '太郎と仕事場で一緒に働く。', name: 'SD_4'},
+              {prompt: '太郎のような人々のための集合支援住宅が近所にできる。', name: 'SD_5'},
+              {prompt: '太郎が家族の一員となる。', name: 'SD_6'}
               ],
-            options: ['1とてもしたい', '2たぶんしたい', '3たぶんしたくない', '4とてもしたくない'],
+            options: ['1. とてもしたい', '2. たぶんしたい', '3. たぶんしたくない', '4. とてもしたくない'],
           }
         ],
         [
@@ -646,28 +647,28 @@
           {
             type: 'multi-choice',
             prompt: "太郎は大学生である。",
-            options : ['正しい', '正しくない'],
+            options : ['1. 正しい', '2. 正しくない'],
             name: 'MC_1',
             required: true
           },
           {
             type: 'multi-choice',
             prompt: '太郎は先月いつもより多くの金額を賭けた。',
-            options : ['正しい', '正しくない'],
+            options : ['1. 正しい', '2. 正しくない'],
             name: 'MC_2',
             required: true
           },
           {
             type: 'multi-choice',
             prompt: '太郎はなかなか自力でギャンブルを止めることができていない。',
-            options : ['正しい', '正しくない'],
+            options : ['1. 正しい', '2. 正しくない'],
             name: 'MC_3',
             required: true
           },
           {
             type: 'multi-choice',
             prompt: '太郎の家族は，太郎に経済的な援助をする必要がない。',
-            options : ['正しい', '正しくない'],
+            options : ['1. 正しい', '2. 正しくない'],
             name: 'MC_4',
             required: true
           }
@@ -687,7 +688,7 @@
           },
           {
             type: 'text',
-            prompt: '上の質問でいずれかのギャンブルを選択した人にお聞きします。それらを週に何日ぐらいするか数字でご記入ください。2週に1日ぐらいの人は0.5，それより少ない人は0とご記入ください。',
+            prompt: '上の質問でいずれかのギャンブルを選択した人にお聞きします。それらを週に何回ぐらいするか数字でご記入ください。2週に1回ぐらいの人は0.5，それより少ない人は0とご記入ください。',
             textbox_columns: 2,
             name: 'gamble_freqency'
           }
@@ -728,12 +729,12 @@
             type: "multi-choice",
             prompt: "実験実施中に何か問題はありましたか。",
             name: "trouble",
-            options: ["問題ない", "軽微な問題", "大きな問題"],
+            options: ["問題はなかった", "軽微な問題", "重大な問題"],
             required: true,
           },
           {
             type: "text",
-            prompt: "上の質問で「軽微な問題」「大きな問題」を選んだ人はその内容を教えてください。",
+            prompt: "上の質問で「軽微な問題」「重大な問題」を選んだ人はその内容を教えてください。",
             name: "trouble_content",
             textbox_rows: 2,
             required: false,
