@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ギャンブラーへの認知に関する研究</title>
+    <script src="https://unpkg.com/jspsych@7.3.4"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.3"></script>
+    <script src ="plugin-iat-html.js"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey@0.2.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.2.1"></script>
+    <script src="https://unpkg.com/@jspsych-contrib/plugin-pipe"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-browser-check@1.0.3"></script>
+    <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://unpkg.com/@jspsych/plugin-survey@0.2.2/css/survey.css">
+    <style type='text/css'>
+      .jspsych-content-wrapper {
+        font-family: 'メイリオ', 'Meiryo', 'Hiragino Kaku Gothic ProN','ヒラギノ角ゴ ProN W3', sans-serif;
+      }
+      .container {
+        text-align: center;
+        width: 700px;
+        display: block
+      }
+      .block {
+        text-align: justify;
+        display: inline-block
+      }
+      .box {
+        padding: 0.5em 1em;
+        margin: 2em 0;
+        font-weight: bold;
+        border: solid 3px;
+        border-radius: 10px;
+      }
+      h1 {
+        font-size:20px;
+      }
+      h2{
+        font-size: 20px;
+        text-align: left;
+        margin-bottom: 0px;
+        margin-top: 30px;
+      }
+      #jspsych-iat-stim {
+        font-size: 50px;
+      }
+      #category_label {
+        font-size: 30px;
+      }
+      #instruction {
+        text-align: left;
+        display: block;
+        position: relative;
+        top: 100px;
+        margin: auto;
+        width: 700px;
+      }
+      #vignette {
+        text-align: start;
+        width: 700px;
+      }
+    </style>
+  </head>
+  <body></body>
+  <script>
+    const jsPsych = initJsPsych({
+      on_finish: function(data) {
+      }
+    });
+
+    /* full-scale study */
+    const exp_id = 'VHmCCDDBSlwC';
+
+    /* set participant id and block order */
+    const participant_id = jsPsych.randomization.randomID(10);
+    const filename = `${participant_id}.csv`;
+
+    const block_order = jsPsych.randomization.sampleWithoutReplacement(['pnpn', 'pnnp', 'nppn', 'npnp'], 1)[0];
+    const code = jsPsych.randomization.randomInt(10000, 99999);
+
+    jsPsych.data.addProperties({
+      participant_id: participant_id,
+      block_order: block_order,
+      code: code
+    });
+
+    /* enter and exit fullscreen */
+    const enter_fullscreen = {
+      type: jsPsychFullscreen,
+      message: `
+        <p>この実験はフルスクリーンモードで行います。</p>
+        <p>以下のボタンを押すとフルスクリーンモードに変わります。</p>
+        <p>途中で中止したいときには，Escキーで解除してブラウザを閉じてください。</p>
+        </div>
+        `,
+      button_label: 'フルスクリーンモードへ',
+      fullscreen_mode: true,
+    };
+
+    const exit_fullscreen = {
+      type: jsPsychFullscreen,
+      delay_after: 0,
+      fullscreen_mode: false,
+    };
+
+    /* define browser check */
+    const valid_brower = ['chrome', 'firefox', 'edge-chromium'];
+    const browser_check = {
+      type: jsPsychBrowserCheck,
+      inclusion_function: (data) => {
+        return valid_brower.includes(data.browser) && data.mobile === false;
+      },
+      exclusion_message: (data) => {
+        if (data.mobile) {
+          jsPsychPipe.getCondition(exp_id); /* for restoring the order of condition assiginment */
+          return `
+          <p>スマートフォンからはこの実験にご参加いただけません。</p>
+          <p>PCからのアクセスをお願いします。</p>`;
+        } else if (!valid_brower.includes(data.browser)) {
+          jsPsychPipe.getCondition(exp_id); /* for restoring the order of condition assiginment */
+          return `
+          <p>この実験にはGoogle Chrome，Firefox, Microsoft Edgeのいずれかのブラウザからしかご参加いただけません。</p>
+          <p>ブラウザを変えてアクセスしてください。</p>
+          `;
+        }
+      },
+    };
+
+    /* informed consent */
+
+    const study_info = `
+      <div class='container'>
+        <h1>ギャンブラーへの認知に関する研究　研究説明書</h1>
+        <p class='block'>以下の説明をお読みいただき，本研究へご協力いただける方は研究参加への同意にチェックマークを入れてお進みください。研究への参加を中止される場合はEscキーでフルスクリーンモードを解除してブラウザを閉じてください。</p>
+
+        <h2>①研究の目的</h2>
+        <p class='block'>この研究は，人のギャンブラーに対する認知について調べることを目的としています。この研究はあなた個人の性格や能力などを調査することを目的としたものではありません。ありのままにお答えください。</p>
+
+        <h2>②研究の方法</strong></h2>
+        <p class='block'> この研究では，Webブラウザ上で（1）ギャンブラーに関するカテゴリー分け課題，および（2）簡単なアンケートに取り組んでいただきます。所要時間は20分程度です。
+
+        <h2>③研究に伴う危険性及び不利益について</h2>
+        <p class='block'>カテゴリー分け課題では，モニターを見続けることで目の疲れや肩こりなどの一時的な疲労やストレスを感じる可能性がありますが，身体や精神に長く続く影響が生じる心配はありません。また，万が一負担や不快感などを感じる場合は，あなたの意思で研究への参加をいつでも中止することができます。中止に伴う不利益は一切生じません。
+          
+        <h2>④研究結果の使われ方</h2>
+        <p class='block'>研究の結果は将来，学術論文や学会発表などを通じ公表される可能性があります。また，本研究は研究の透明性を高める観点から研究で取得したデータを研究公開用のサイト（https://osf.io/）で公開します。このデータでは，研究参加者にランダムなIDを付与した上で公開しますので，あなた個人を特定する情報が公になることは一切ありません。
+          
+        <h2>⑤個人情報とデータの取り扱い</h2>
+        <p class='block'>カテゴリー分けの課題ではキー押しの反応と反応にかかる時間が取得されます。また，アンケート調査では選択された回答が記録され，その他にアクセスしているブラウザの種類や画面の解像度等の情報が記録されますが，データは全て匿名で扱われます。研究データは本研究の関係者以外がアクセスできないサーバー上に保管されます。研究期間終了後，5年間保管された後に破棄されます。研究公開用サイトで公開するデータについては，5年目以降も公開を続けるものとします。</p>
+          
+        <h2>⑥研究協力の自由及び同意の撤回について</h2>
+        <p class='block'>研究へ参加するかどうかはあなたの自由な意思で決めることができ，研究への参加は強制されるものではありません。研究へ参加しないことによってあなたが不利益をこうむることは一切ありません。データは匿名で記録される関係で，研究終了後は同意を撤回できないことをご了承ください。</p>
+          
+        <h2>研究の問い合わせ先</h2>
+        <p class='block'>本研究の内容に関してご意⾒・ご質問などがございましたら，研究責任者にお尋ね下さい。<br><br>
+            連絡先： 愛知学院大学心理学部心理学科 小野島昂洋<br>
+            E-mail: onoshima@dpc.agu.ac.jp
+        <h1>研究参加への同意書</h1>
+      </div>
+      `
+
+    const ic = {
+      type: jsPsychSurveyMultiSelect,
+      questions: [
+        {
+          prompt: study_info,
+          options: ['<strong>研究への参加に同意する</strong>'],
+          required: true,
+          name: 'consent_first'
+        }
+      ],
+      required_message: '研究へ参加される場合は「研究への参加に同意する」にチェックマークを入れてください。中止される場合はブラウザを閉じてください。',
+      button_label: '次へ',
+      on_finish: function (data){
+          data.consent_first = '研究への参加に同意する';
+      }
+    };
+
+
+    /* implicit association test */
+    const pos_words = ['偉大な', '豪華な', '満足な', '面白い', 'すばらしい'];
+    const neg_words = ['邪悪な', '憂鬱な', '悲惨な', '薄暗い', 'おそろしい'];
+
+    function generate_stimuli(num_each) {
+      let gam = Array(num_each[0]).fill('ギャンブラー');
+      let pos = jsPsych.randomization.sampleWithReplacement(pos_words, num_each[1]);
+      let neg = jsPsych.randomization.sampleWithReplacement(neg_words, num_each[2]);
+
+      return jsPsych.randomization.repeat(gam.concat(pos).concat(neg), 1)
+    }
+
+    function set_timeline_variables(stimuli, is_positive, block_name) {
+      let res = [];
+      let correct_side = '';
+      let left = [];
+      let right = [];
+
+      if (is_positive) {
+        left = ['ネガティブ'];
+        right = ['ポジティブ', 'ギャンブラー']
+      } else {
+        left = ['ネガティブ', 'ギャンブラー'];
+        right = ['ポジティブ']
+      }
+
+      for (let i = 0; i < stimuli.length; i ++) {
+        if (neg_words.includes(stimuli[i])) {
+          correct_side = 'left';
+        } else if (pos_words.includes(stimuli[i])) {
+          correct_side ='right';
+        } else {
+          if (is_positive) {  /* ギャンブラーの場合の分岐 */
+            correct_side ='right';
+          } else {
+            correct_side = 'left';
+          }
+        }
+        res.push({
+          block: block_name,
+          stimulus: stimuli[i],
+          left_label: left,
+          right_label: right,
+          key_association: correct_side
+        })
+      }
+      return res
+    }
+
+    const p1_stimuli_pre = generate_stimuli([7, 7, 10]);
+    const p2_stimuli_pre = generate_stimuli([7, 7, 10]);
+    const p3_stimuli_pre = generate_stimuli([7, 7, 10]);
+    const n1_stimuli_pre = generate_stimuli([7, 10, 7]);
+    const n2_stimuli_pre = generate_stimuli([7, 10, 7]);
+    const n3_stimuli_pre = generate_stimuli([7, 10, 7]);
+
+    const p1_variables_pre = set_timeline_variables(p1_stimuli_pre, true, 'p_1_pre')
+    const p2_variables_pre = set_timeline_variables(p2_stimuli_pre, true, 'p_2_pre')
+    const p3_variables_pre = set_timeline_variables(p3_stimuli_pre, true, 'p_3_pre')
+    const n1_variables_pre = set_timeline_variables(n1_stimuli_pre, false, 'n_1_pre')
+    const n2_variables_pre = set_timeline_variables(n2_stimuli_pre, false, 'n_2_pre')
+    const n3_variables_pre = set_timeline_variables(n3_stimuli_pre, false, 'n_3_pre')
+
+    const p1_stimuli_post = generate_stimuli([7, 7, 10]);
+    const p2_stimuli_post = generate_stimuli([7, 7, 10]);
+    const p3_stimuli_post = generate_stimuli([7, 7, 10]);
+    const n1_stimuli_post = generate_stimuli([7, 10, 7]);
+    const n2_stimuli_post = generate_stimuli([7, 10, 7]);
+    const n3_stimuli_post = generate_stimuli([7, 10, 7]);
+
+    const p1_variables_post = set_timeline_variables(p1_stimuli_post, true, 'p_1_post')
+    const p2_variables_post = set_timeline_variables(p2_stimuli_post, true, 'p_2_post')
+    const p3_variables_post = set_timeline_variables(p3_stimuli_post, true, 'p_3_post')
+    const n1_variables_post = set_timeline_variables(n1_stimuli_post, false, 'n_1_post')
+    const n2_variables_post = set_timeline_variables(n2_stimuli_post, false, 'n_2_post')
+    const n3_variables_post = set_timeline_variables(n3_stimuli_post, false, 'n_3_post')
+    
+    let pre_variables = [];
+    let post_variables = [];
+
+    if (block_order == 'pnpn') {
+      pre_variables = p1_variables_pre.concat(p2_variables_pre).concat(p3_variables_pre).concat(
+        n1_variables_pre).concat(n2_variables_pre).concat(n3_variables_pre);
+      post_variables = p1_variables_post.concat(p2_variables_post).concat(p3_variables_post).concat(
+        n1_variables_post).concat(n2_variables_post).concat(n3_variables_post);
+    } else if (block_order == 'pnnp') {
+      pre_variables = p1_variables_pre.concat(p2_variables_pre).concat(p3_variables_pre).concat(
+        n1_variables_pre).concat(n2_variables_pre).concat(n3_variables_pre);
+      post_variables = n1_variables_post.concat(n2_variables_post).concat(n3_variables_post).concat(
+        p1_variables_post).concat(p2_variables_post).concat(p3_variables_post);
+    } else if (block_order == 'nppn') {
+      pre_variables = n1_variables_pre.concat(n2_variables_pre).concat(n3_variables_pre).concat(
+        p1_variables_pre).concat(p2_variables_pre).concat(p3_variables_pre);
+      post_variables = p1_variables_post.concat(p2_variables_post).concat(p3_variables_post).concat(
+        n1_variables_post).concat(n2_variables_post).concat(n3_variables_post);
+    } else {
+      pre_variables = n1_variables_pre.concat(n2_variables_pre).concat(n3_variables_pre).concat(
+        p1_variables_pre).concat(p2_variables_pre).concat(p3_variables_pre);
+      post_variables = n1_variables_post.concat(n2_variables_post).concat(n3_variables_post).concat(
+        p1_variables_post).concat(p2_variables_post).concat(p3_variables_post);
+    }
+
+    let counter = 0;
+    let current_block = '';
+    if(block_order == 'npnp' || block_order == 'nppn') {
+      current_block = 'negative';
+    } else {
+      current_block = 'positive';
+    }
+
+    const iat_trial = {
+      type: jsPsychIatHtml,
+      stimulus: jsPsych.timelineVariable('stimulus'),
+      stim_key_association: jsPsych.timelineVariable('key_association') ,
+      html_when_wrong: '<span style="color: red; font-size: 80px">X</span>',
+      bottom_instructions:
+        '<p>間違えると赤い X が表示されます。続けるには正しい方のキーを押します。</p>',
+      force_correct_key_press: true,
+      display_feedback: true,
+      left_category_key: 'E',
+      right_category_key: 'I',
+      left_category_label: jsPsych.timelineVariable('left_label'),
+      right_category_label: jsPsych.timelineVariable('right_label'),
+      response_ends_trial: true,
+      iti: 250,
+      on_finish: function (data) {
+        counter = counter + 1;
+        if (counter % 24 == 1) {
+          data.is_first = true;
+        } else {
+          data.is_first = false;
+        }
+      },
+      data: {
+        block: jsPsych.timelineVariable('block')
+      }
+    };
+
+    const make_category_display = function (left, right) {
+      let html_category = "";
+      html_category +=
+          "<div id='trial_left_align' style='position: absolute; top: 18%; left: 20%'>E キーを押す <br>" +
+            "<span id='category_label'>"
+      if (left.length == 1) {
+        html_category +=
+            left[0] + "</span>" +
+            "</div>"
+            html_category +=
+            "<div id='trial_right_align' style='position: absolute; top: 18%; right: 20%'>" +
+              "I キーを押す <br>" +
+              "<span id='category_label'>" + right[0] + "</span><br>" +
+              "または<br>" +
+              "<span id='category_label'>" + right[1] + "</span>" +
+          "</div>"
+      } else {
+        html_category +=
+            left[0] + "</span><br>" +
+            "または<br>" +
+            "<span id='category_label'>" + left[1] + "</span>" +
+            "</div>"
+            html_category +=
+            "<div id='trial_right_align' style='position: absolute; top: 18%; right: 20%'>" +
+              "I キーを押す <br>" +
+              "<span id='category_label'>" + right[0] +"</span>" +
+            "</div>"
+      }
+      return html_category;
+    };
+
+    // instructions between blocks
+    const ready = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        html_ready = "";
+        if (current_block == 'positive') {
+          html_ready += make_category_display(['ネガティブ'], ['ポジティブ', 'ギャンブラー']);
+        } else {
+          html_ready += make_category_display(['ネガティブ', 'ギャンブラー'], ['ポジティブ']);
+        }
+        html_ready +=
+          `<div id='instruction'>
+            <p>まずは「ギャンブラーに関するカテゴリー分け」課題に取り組んでいただきます。左手の人差し指を「E」のキーに，右手の人差し指を「I」のキーに置いてください。
+            
+            <p>これから単語が画面中央に次々と表示されます。単語は画面上部に表示されている3つのカテゴリーのいずれかに属しています。単語が左側のカテゴリーに属している場合には「E」のキーを押してください。
+            単語が右側のカテゴリーに属している場合には「I」のキーを押してください。</p>
+              
+            <p>押したキーが間違っていた場合には，赤い X が表示されます。
+              その場合には，正しい方のキーを押すと次に進めます。
+              カテゴリー分けは可能な限り<strong>素早く</strong>かつ<strong>正確に</strong>行なってください。</p>
+
+            <p>「E」か「I」のキーを押すと練習が始まります。</p>
+            </div>`
+        return html_ready
+    },
+      choices: ['e', 'i'],
+      on_start: function() {
+        let content_wrapper = document.querySelector(".jspsych-content-wrapper");
+        content_wrapper.style.cursor = 'none';
+      }
+    };
+
+    const notice_test = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        let html_test = "";
+        if (current_block == 'positive') {
+          html_test += make_category_display(['ネガティブ'], ['ポジティブ', 'ギャンブラー'])
+        } else {
+          html_test += make_category_display(['ネガティブ', 'ギャンブラー'], ['ポジティブ'])
+        }
+        html_test +=
+          `<div id='instruction'>
+            <p>練習は終わりです。次も先ほどと同じ配置でカテゴリー分けをします。</p>
+            
+            <p>単語が左側のカテゴリーに属している場合には「E」のキーを押してください。単語が右側のカテゴリーに属している場合には「I」のキーを押してください。</p>
+              
+            <p>押したキーが間違っていた場合には，赤い X が表示されます。
+              その場合には，正しい方のキーを押すと次に進めます。
+              カテゴリー分けは可能な限り<strong>素早く</strong>かつ<strong>正確に</strong>行なってください。</p>
+            
+            <p>スペースキーを押すと課題が始まります。</p>
+            </div>
+          `
+        return html_test;
+      },
+      choices: [' '],
+    }
+
+    const if_notice = {
+      timeline: [notice_test],
+      conditional_function: function () {
+        if (counter == 24 || counter == 96) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    const rest = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        let html_rest = "";
+        if (current_block == 'positive') {
+          html_rest += make_category_display(['ネガティブ'], ['ポジティブ', 'ギャンブラー'])
+        } else {
+          html_rest += make_category_display(['ネガティブ', 'ギャンブラー'], ['ポジティブ'])
+        }
+
+        html_rest +=
+          `<div id='instruction'>
+            <p>休憩です。次も同じカテゴリー配置でカテゴリー分けを行います。</p>
+            
+            <p>単語が左側のカテゴリーに属している場合には「E」のキーを押してください。
+            単語が右側のカテゴリーに属している場合には「I」のキーを押してください。</p>
+              
+            <p>押したキーが間違っていた場合には，赤い X が表示されます。
+              その場合には，正しい方のキーを押すと次に進めます。
+              カテゴリー分けは可能な限り<strong>素早く</strong>かつ<strong>正確に</strong>行なってください。</p>
+            
+            <p>スペースキーを押すと課題が始まります。</p>
+            </div>
+          `
+        return html_rest;
+      },
+      choices: [' ']
+    }
+
+    const if_rest = {
+      timeline: [rest],
+      conditional_function: function () {
+        if (counter == 48 || counter == 120) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    const notice_change_condition = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function () {
+        let html_change = ""
+        if (current_block == 'positive') {
+          html_change += make_category_display(['ネガティブ'], ['ポジティブ', 'ギャンブラー'])
+        } else {
+          html_change += make_category_display(['ネガティブ', 'ギャンブラー'], ['ポジティブ'])
+        }
+        
+        html_change +=
+        `<div id='instruction'>
+          <p>画面の上部に注目してください。次からはカテゴリーの配置が先ほどとは変わります。</p>
+
+          <p>カテゴリー分けのルールは先ほどまでと同じです。
+            単語が左側のカテゴリーに属している場合には「E」のキーを押してください。
+            単語が右側のカテゴリーに属している場合には「I」のキーを押してください。</p>
+              
+          <p>押したキーが間違っていた場合には，赤い X が表示されます。
+            その場合には，正しい方のキーを押すと次に進めます。
+            カテゴリー分けは可能な限り<strong>素早く</strong>かつ<strong>正確に</strong>行なってください。
+            </p>
+
+          <p>スペースキーを押すと練習が開始されます。</p>
+          </div>
+          `
+        return html_change;
+      },
+      choices: [' ']
+    }
+
+    const if_change_condition = {
+      timeline: [notice_change_condition],
+      conditional_function: function () {
+        if (counter == 72) {
+          if (current_block == 'negative') {
+            current_block = 'positive'
+          } else {
+            current_block = 'negative'
+          }
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    const intro_post = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: function() {
+        let html_post = "";
+        if(block_order == 'pnpn' || block_order == 'nppn') {
+          current_block = 'positive';
+        } else {
+          current_block = 'negative';
+        }
+        if (current_block == 'positive') {
+          html_post += make_category_display(['ネガティブ'], ['ポジティブ', 'ギャンブラー']);
+        } else {
+          html_post += make_category_display(['ネガティブ', 'ギャンブラー'], ['ポジティブ']);
+        }
+        html_post +=
+          `<div id='instruction'>
+            <p>続いて再び「カテゴリー分け課題」に取り組んでいただきます。
+            左手の人差し指を「E」のキーに，右手の人差し指を「I」のキーに置いてください。</p>
+            
+            <p>先ほどと同様に，これから単語が画面中央に次々と表示されます。
+              単語は画面上部に表示されている3つのカテゴリーのいずれかに属しています。
+              単語が左側のカテゴリーに属している場合には「E」のキーを押してください。単語が右側のカテゴリーに属している場合には「I」のキーを押してください。
+              
+            <p>押したキーが間違っていた場合には，赤い X が表示されます。
+              その場合には，正しい方のキーを押すと次に進めます。
+              カテゴリー分けは可能な限り<strong>素早く</strong>かつ<strong>正確に</strong>行なってください。</p>
+
+            <p>「E」か「I」のキーを押すと練習試行が始まります。</p>
+          </div>
+          `
+        return html_post;
+      },
+      choices: ['e', 'i'],
+      on_start: function() {
+        counter = 0;
+      }
+    };
+
+    // iat timeline
+    const iat_pre = {
+      timeline: [iat_trial, if_change_condition, if_notice, if_rest],
+      timeline_variables: pre_variables
+    }
+
+    const iat_post = {
+      timeline: [iat_trial, if_change_condition, if_notice, if_rest],
+      timeline_variables: post_variables
+    }
+
+    /* vignette */
+    const intro_vignette = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <div id='instruction'>
+        <p>これからある人物についてのシナリオを読んでいただきます。<br>
+        シナリオの内容についてのテストが後ほどあるので，よく読んで内容を十分に理解してから次に進むようにしてください。</p>
+        
+        <p>なお，シナリオ内で出てくるギャンブルは全て合法的なものであり，主人公は実在している人物とは一切関係がありません。</p>
+
+        <p>スペースキーを押すと次の画面に進みます。</p>
+      `,
+      choices: [' ']
+    };
+
+    const vignette_pathological = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `
+        <div id='vignette'>
+        太郎はあなたの大学の学生です。先月太郎はいつもより多くのお金を賭けるようになりました。
+        同じような興奮を得るためには，以前よりももっとギャンブルをしなければならないことにも彼は気づいていました。彼は何度かギャンブルを減らそうとしたり止めたりしようとしましたが，その度に興奮して眠れなくなり，再びギャンブルを始めました。彼の家族は，彼がひどく変わってしまったことや，彼が誰なのかさえ分からなくなったような気がすると訴えています。また，経済的な援助をしなければならないことに憤りを感じ始めています。<span style='text-decoration: underline wavy; font-weight: bold; font-style: italic'>ギャンブラーというカテゴリーの中には，太郎のようなギャンブル依存者が非常に多く存在します。</span>
+        </div>`,
+        choices: ['enter'],
+        prompt: '<br>内容をよく読んで理解したらEnterキーで次に進みます。'
+      };
+
+    const vignette_recreational = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: `
+        <div id='vignette'>
+        <p>太郎はあなたの大学の学生です。先月太郎はいつも通りの金額で賭けを行いました。趣味として，以前と変わらずギャンブルを楽しめています。彼は学業やサークルが忙しい時はギャンブルを減らしたり止めたりすることができており，時間に余裕があるときに節度を持ってギャンブルをするようにしています。彼の家族は彼が自分を律しながらギャンブルを楽しんでいる様子を見守っています。また，経済的な援助をする必要がない状態で，一切憤りを感じることもありません。<span style='text-decoration: underline wavy; font-weight: bold; font-style: italic'>ギャンブラーというカテゴリーの中には，太郎のようなギャンブルを趣味として程よく楽しめる人が非常に多く存在します。</span>
+        </div>`,
+        choices: ['enter'],
+        prompt: '<br>内容をよく読んで理解したらEnterキーで次に進みます。'
+      };
+
+    /* questions following IAT */
+    const intro_survey = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <p>ここからはいくつかの質問に答えていただきます。</p>
+      `,
+      choices: ['enter'],
+      prompt: 'Enterキーを押すと次の画面に進みます。',
+      on_start: function() {
+        let content_wrapper = document.querySelector(".jspsych-content-wrapper");
+        content_wrapper.style.cursor = 'auto';
+      }
+    };
+
+    const survey = {
+      type: jsPsychSurvey,
+      button_label_next: '次へ',
+      button_label_back: '戻る',
+      button_label_finish: '次へ',
+      pages: [
+        [
+            {
+            type: 'html',
+            prompt: '先ほど読んでいただいた太郎のシナリオについて，以下の項目にお答えください。'
+          },
+          {
+            type: 'likert-table',
+            prompt: 'あなたが以下の状況になったら，どれくらいそれをしたいと思うと思いますか。',
+            statements: [
+              {prompt: '太郎の家の隣に引っ越す', name: 'ASD_1'},
+              {prompt: '太郎と友達になる', name: 'ASD_2'},
+              {prompt: '太郎と夕方から夜にかけて一緒に過ごす', name: 'ASD_3'},
+              {prompt: '太郎と仕事場で一緒に働く', name: 'ASD_4'},
+              {prompt: '太郎のような人々のための集合支援住宅が近所にできる', name: 'ASD_5'},
+              {prompt: '太郎が家族の一員となる', name: 'ASD_6'}
+              ],
+            options: ['1とてもしたい', '2たぶんしたい', '3たぶんしたくない', '4とてもしたくない'],
+          }
+        ],
+        [
+          {
+            type: 'html',
+            prompt: '先ほど読んでいただいた太郎のシナリオについて，以下の項目にお答えください。'
+          },
+          {
+            type: 'multi-choice',
+            prompt: "太郎は大学生である。",
+            options : ['正しい', '正しくない'],
+            name: 'MC_1',
+            required: true
+          },
+          {
+            type: 'multi-choice',
+            prompt: '太郎は先月いつもより多くの金額を賭けた。',
+            options : ['正しい', '正しくない'],
+            name: 'MC_2',
+            required: true
+          },
+          {
+            type: 'multi-choice',
+            prompt: '太郎はなかなか自力でギャンブルを止めることができていない。',
+            options : ['正しい', '正しくない'],
+            name: 'MC_3',
+            required: true
+          },
+          {
+            type: 'multi-choice',
+            prompt: '太郎の家族は，太郎に経済的な援助をする必要がない。',
+            options : ['正しい', '正しくない'],
+            name: 'MC_4',
+            required: true
+          }
+        ],
+        [
+          {
+            type: 'multi-select',
+            prompt: 'あなたは最近，実際にお金を賭けたギャンブルを行いましたか。行ったものを以下の選択肢から全て回答してください。',
+            options : ['パチンコ', 'パチスロ', '競馬', '競艇', '競輪', 'toto', '宝くじ', 'ナンバーズ', 'インターネットギャンブル', 'その他'],
+            columns: 2,
+            name: 'gamble_exp'
+          },
+          {
+            type: 'text',
+            prompt: '「その他」を選択された方はその内容をご記入ください。',
+            name: 'gamble_other_text'
+          },
+          {
+            type: 'text',
+            prompt: '上の質問でいずれかのギャンブルを選択した人にお聞きします。それらを週に何日ぐらいするか数字でご記入ください。2週に1日ぐらいの人は0.5，それより少ない人は0とご記入ください。',
+            textbox_columns: 2,
+            name: 'gamble_freqency'
+          }
+        ],
+        [
+        {
+            type: "html",
+            prompt: "研究へのご協力ありがとうございました。最後に以下の質問にお答えください。",
+          },
+          {
+            type: "multi-choice",
+            prompt: "国籍",
+            name: "nationality",
+            options: ["日本", "それ以外", "答えたくない"],
+            required: true,
+          },
+          {
+            type: "text",
+            prompt: "国籍で「それ以外」を選んだ場合は具体的に記入",
+            name: "nationality_other",
+            required: false,
+          },
+          {
+            type: "multi-choice",
+            prompt: "性別",
+            name: "gender",
+            options: ["男性", "女性", "その他", "答えたくない"],
+            required: true,
+          },
+          {
+            type: "drop-down",
+            prompt: "年齢",
+            name: "age",
+            options: [...Array(8)].map((_, i) => i + 18).concat("答えたくない"),
+            required: true,
+          },
+          {
+            type: "multi-choice",
+            prompt: "実験実施中に何か問題はありましたか。",
+            name: "trouble",
+            options: ["問題ない", "軽微な問題", "大きな問題"],
+            required: true,
+          },
+          {
+            type: "text",
+            prompt: "上の質問で「軽微な問題」「大きな問題」を選んだ人はその内容を教えてください。",
+            name: "trouble_content",
+            textbox_rows: 2,
+            required: false,
+          }
+        ]
+      ]
+    }
+
+    /* debriefing*/
+    const debriefing = {
+      type: jsPsychSurveyMultiSelect,
+      questions: [
+        {
+          prompt: `
+          <div class='container'>
+          <p class='block'>本日は研究へのご協力ありがとうございました。</p>
+          <p class='block'>本研究は「ギャンブラーへの認知」を調べることを目的としていると最初に説明しましたが，本当の目的は他にありましたのでここで説明します。この手続きをとった理由は，本当の目的を最初に伝えることにより，研究に対する「構え」ができてしまい，結果に影響を与えてしまうことを避けるためです。</p>
+          <p class='block'>本研究の本当の目的は，ギャンブラーについてのシナリオを読んだ前後でギャンブラーへの態度が変化するかを検討することでした。シナリオの前後で行っていただいたカテゴリー分けの課題は，ギャンブラーへの潜在的な（意識されない）態度を測定するために行われたものです。シナリオは複数用意されており，その内のいずれか1つが研究参加者にはランダムで割り当てられました。</p>
+          <p class='block'>なおシナリオ内で太郎のようなギャンブラーが非常に多く存在すると書きましたが，日本では生涯において一度でもギャンブル依存症が疑われる者の割合は3.6%程度だと推定されています。ギャンブルを程よく楽しむ愛好家については，正確な統計はないものの依存症者よりも多いことが推定されています。</p>
+          <p class='block'>このように本当の目的を隠して実験を行う手続きについて不快に思われた場合は研究への参加を中止することもできます。その場合はブラウザを閉じて研究への参加を中止してください（全画面モードはEscキーで解除できます）。
+          </div>
+          `,
+          options: ['<span style = "font-size: 14pt; font-weight: bold">以上の内容を理解した上で，研究への参加に同意します。</span>'],
+          required: true,
+          name: 'consent_last'
+        }],
+        required_message: '研究への参加へと同意される場合はチェックマークをつけてください。同意されない場合はブラウザを閉じて研究への参加を中止してください。',
+        button_label: '次へ',
+        data: {
+          type: 'consent_last'
+        },
+        on_finish: function (data){
+          data.consent_last = '以上の内容を理解した上で，研究への参加に同意します。';
+        }
+    };
+
+
+    /* data pipe */
+    const save_data = {
+      type: jsPsychPipe,
+      action: "save",
+      experiment_id: exp_id,
+      filename: filename,
+      data_string: ()=>jsPsych.data.get().csv()
+      };
+
+    /* thankyou */
+    const thankyou = {
+      type: jsPsychSurveyMultiSelect,
+      questions: [{
+        prompt: function () {
+        return `
+        <p>本日は研究にご参加いただきありがとうございました。</p>
+        <p>研究参加の報告コードは <strong>GA${code}</strong> です。</p>
+        <p>指定されたURLで参加報告をしてください。</p><br>
+        <p>「研究を終了する」ボタンを押すと研究を終了します。<br>
+        （コードは再表示されませんので正確にメモをするようお願いします。）</p>
+        `},
+        options: ['<span style = "font-size: 14pt; font-weight: bold">研究参加コードを正確にメモしました。</span>'],
+        required: true
+      }],
+      required_message: '研究参加コードはメモしましたか？終了すると再表示はされません。',
+      button_label: '研究を終了する',
+    };
+    const end_of_experiment = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: '<p>実験にご参加いただきありがとうございました。</p><p>画面を閉じてください</p>',
+      choices: 'NO_KEYS'
+    };
+
+    
+    async function createExperiment(){
+      const condition = await jsPsychPipe.getCondition(exp_id);
+      let timeline = [];
+      const timeline_pre_vignette = [enter_fullscreen, browser_check, ic,
+      ready, iat_pre, intro_vignette
+      ];
+      const timeline_post_vignette = [
+        intro_post, iat_post, intro_survey, survey, debriefing, save_data, thankyou, exit_fullscreen,
+        end_of_experiment
+      ];
+      
+      if(condition == 0) {
+        jsPsych.data.addProperties({group: 'pathological'});
+        timeline = timeline_pre_vignette.concat([vignette_pathological]).concat(timeline_post_vignette);
+      }
+      if(condition == 1) {
+        jsPsych.data.addProperties({group: 'recreational'});
+        timeline = timeline_pre_vignette.concat([vignette_recreational]).concat(timeline_post_vignette);
+      }
+
+      jsPsych.run(timeline);
+    }
+    createExperiment();
+  </script>
+</html>

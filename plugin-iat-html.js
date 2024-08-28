@@ -3,9 +3,7 @@ The MIT License (MIT)
 Copyright (c) 2014-2022 Joshua R. de Leeuw
 
 This software includes modifications made by Takahiro Onoshima to the original
-software licensed under the MIT License. Modified portions of this software are
-(1) to translate some English instructions into Japanese and
-(2) to change font size of stimulus.
+software licensed under the MIT License.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -131,7 +129,7 @@ var jsPsychIatHtml = (function (jspsych) {
       trial(display_element, trial) {
           var html_str = "";
           html_str +=
-              "<div style='position: absolute; height: 20%; width: 100%; margin-left: auto; margin-right: auto; top: 42%; left: 0; right: 0'><p id='jspsych-iat-stim' style='font-size: xx-large'>" +
+              "<div style='position: absolute; height: 20%; width: 100%; margin-left: auto; margin-right: auto; top: 42%; left: 0; right: 0'><p id='jspsych-iat-stim'>" +
                   trial.stimulus +
                   "</p></div>";
           html_str += "<div id='trial_left_align' style='position: absolute; top: 18%; left: 20%'>";
@@ -139,36 +137,42 @@ var jsPsychIatHtml = (function (jspsych) {
               html_str +=
                       trial.left_category_key +
                       " キーを押す <br> " +
-                      trial.left_category_label[0].bold() +
-                      "</p></div>";
+                      "<span id='category_label'>" +
+                      trial.left_category_label[0] +
+                      "</span></div>";
           }
           else {
               html_str +=
                       trial.left_category_key +
                       " キーを押す <br> " +
-                      trial.left_category_label[0].bold() +
-                      "<br>" +
-                      "or<br>" +
-                      trial.left_category_label[1].bold() +
-                      "</p></div>";
+                      "<span id='category_label'>" +
+                      trial.left_category_label[0] +
+                      "</span><br>" +
+                      "または<br>" +
+                      "<span id='category_label'>" +
+                      trial.left_category_label[1] +
+                      "</span></div>";
           }
           html_str += "<div id='trial_right_align' style='position: absolute; top: 18%; right: 20%'>";
           if (trial.right_category_label.length == 1) {
               html_str +=
                       trial.right_category_key +
                       " キーを押す <br> " +
-                      trial.right_category_label[0].bold() +
-                      "</p></div>";
+                      "<span id='category_label'>" +
+                      trial.right_category_label[0] +
+                      "</span></div>";
           }
           else {
               html_str +=
                       trial.right_category_key +
                       " キーを押す <br> " +
-                      trial.right_category_label[0].bold() +
-                      "<br>" +
-                      "or<br>" +
-                      trial.right_category_label[1].bold() +
-                      "</p></div>";
+                      "<span id='category_label'>" +
+                      trial.right_category_label[0] +
+                      "</span><br>" +
+                      "または<br>" +
+                      "<span id='category_label'>" +
+                      trial.right_category_label[1] +
+                      "</span></div>";
           }
           html_str +=
               "<div id='wrongImgID' style='position:relative; top: 300px; margin-left: auto; margin-right: auto; left: 0; right: 0'>";
@@ -189,7 +193,10 @@ var jsPsychIatHtml = (function (jspsych) {
               rt: null,
               key: null,
               correct: false,
+              rt_last_response: null
           };
+          // flag to start keyboardListner
+          var is_first_response = true;
           // function to end trial when it is time
           const end_trial = () => {
               // kill any remaining setTimeout handlers
@@ -198,17 +205,27 @@ var jsPsychIatHtml = (function (jspsych) {
               if (typeof keyboardListener !== "undefined") {
                   this.jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
               }
+              if (typeof Listener2 !== "undefined") {
+                this.jsPsych.pluginAPI.cancelKeyboardResponse(Listener2);
+              }
               // gather the data to store for the trial
               var trial_data = {
                   rt: response.rt,
                   stimulus: trial.stimulus,
                   response: response.key,
                   correct: response.correct,
+                  rt_last_response: response.rt_last_response
               };
               // clears the display
-              display_element.innerHTML = "";
+              let iat_stim = display_element.querySelector("#jspsych-iat-stim");
+              iat_stim.style.visibility = "hidden";
+              let wImg = document.getElementById("wrongImgContainer");
+              wImg.style.visibility = "hidden";
+
               // move on to the next trial
-              this.jsPsych.finishTrial(trial_data);
+              this.jsPsych.pluginAPI.setTimeout(() => {
+                this.jsPsych.finishTrial(trial_data);;
+              }, trial.iti);
           };
           var leftKeyCode = trial.left_category_key;
           var rightKeyCode = trial.right_category_key;
@@ -223,6 +240,8 @@ var jsPsychIatHtml = (function (jspsych) {
                   response.key = info.key;
                   response.rt = info.rt;
               }
+              response.rt_last_response = info.rt;
+
               if (trial.stim_key_association == "right") {
                   if (response.rt !== null &&
                       this.jsPsych.pluginAPI.compareKeys(response.key, rightKeyCode)) {
@@ -239,10 +258,13 @@ var jsPsychIatHtml = (function (jspsych) {
                       if (trial.response_ends_trial && trial.display_feedback == true) {
                           wImg.style.visibility = "visible";
                           if (trial.force_correct_key_press) {
-                              this.jsPsych.pluginAPI.getKeyboardResponse({
-                                  callback_function: end_trial,
-                                  valid_responses: [trial.right_category_key],
-                              });
+                            if (is_first_response) {
+                                this.jsPsych.pluginAPI.getKeyboardResponse({
+                                    callback_function: end_trial,
+                                    valid_responses: [trial.right_category_key],
+                                });
+                                is_first_response = false;
+                            }
                           }
                           else {
                               this.jsPsych.pluginAPI.getKeyboardResponse({
@@ -272,10 +294,13 @@ var jsPsychIatHtml = (function (jspsych) {
                       if (trial.response_ends_trial && trial.display_feedback == true) {
                           wImg.style.visibility = "visible";
                           if (trial.force_correct_key_press) {
+                            if (is_first_response) {
                               this.jsPsych.pluginAPI.getKeyboardResponse({
                                   callback_function: end_trial,
                                   valid_responses: [trial.left_category_key],
                               });
+                              is_first_response = false;
+                            }
                           }
                           else {
                               this.jsPsych.pluginAPI.getKeyboardResponse({
@@ -297,7 +322,7 @@ var jsPsychIatHtml = (function (jspsych) {
                   callback_function: after_response,
                   valid_responses: [trial.left_category_key, trial.right_category_key],
                   rt_method: "performance",
-                  persist: false,
+                  persist: true,
                   allow_held_key: false,
               });
           }
